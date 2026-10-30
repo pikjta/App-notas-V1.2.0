@@ -1,0 +1,55 @@
+# Compila Cuaderno para macOS con firma ad-hoc (sin cuenta de Apple, para uso personal).
+# Se lanza a mano desde la pestaña Actions → «Compilar para macOS (v1.1.0, firma ad-hoc)» → Run workflow.
+# Al terminar, los .dmg (uno para Mac con Apple Silicon y otro para Mac con Intel) están en «Artifacts».
+name: Compilar para macOS (v1.1.0, firma ad-hoc)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin   # Mac con Apple Silicon (M1, M2…)
+            name: apple-silicon
+          - target: x86_64-apple-darwin    # Mac con Intel
+            name: intel
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: '. -> target'
+
+      - run: npm ci
+
+      - name: Pruebas (interfaz y núcleo)
+        run: |
+          npm test
+          cargo test -p cuaderno-core
+
+      # Sin clave de firma no se generan los archivos del actualizador; aquí no hacen falta.
+      # Firma ad-hoc («-»): no necesita cuenta de Apple. Sin ninguna firma, macOS en Apple Silicon
+      # dice que la app «está dañada». No sustituye a la firma y notarización de Apple.
+      - name: Compilar la app
+        env:
+          APPLE_SIGNING_IDENTITY: "-"
+        run: npx tauri build --target ${{ matrix.target }} --config .github/tauri-sin-actualizador.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cuaderno-macos-${{ matrix.name }}
+          path: target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+          if-no-files-found: error
