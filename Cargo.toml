@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = ["crates/cuaderno-core", "crates/cuaderno-os", "src-tauri"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+# Argon2 y AES son lentos sin optimizar: optimizamos también las dependencias en modo dev.
+[profile.dev.package."*"]
+opt-level = 3

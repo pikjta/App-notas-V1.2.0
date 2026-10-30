@@ -1,0 +1,14 @@
+[package]
+name = "cuaderno-os"
+version = "0.1.0"
+edition = "2021"
+description = "Cuaderno: integración con el sistema (llavero y Touch ID / Windows Hello)"
+license = "MIT"
+
+[dependencies]
+# Llavero del sistema: Keychain (macOS), Credential Manager (Windows), Secret Service (Linux).
+keyring = "4.2"
+
+# Biometría solo donde el sistema la ofrece de forma estándar.
+[target.'cfg(any(target_os = "macos", target_os = "windows"))'.dependencies]
+robius-authentication = "0.3.1"

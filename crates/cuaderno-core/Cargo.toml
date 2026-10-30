@@ -1,0 +1,23 @@
+[package]
+name = "cuaderno-core"
+version = "0.1.0"
+edition = "2021"
+description = "Núcleo de Cuaderno: almacenamiento SQLite, cifrado y copias de seguridad"
+license = "MIT"
+
+[dependencies]
+aes-gcm = "0.10"
+argon2 = "0.5"
+base64 = "0.22"
+bip39 = { version = "2", features = ["spanish"] }
+hkdf = "0.12"
+rand = "0.8"
+rusqlite = { version = "0.32", features = ["bundled-sqlcipher-vendored-openssl"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "1"
+zeroize = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3"
