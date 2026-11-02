@@ -49,7 +49,7 @@ export const app: Part<typeof Es> = {
   'ui.every.h12': 'Every 12 hours',
   'ui.every.day': 'Every day',
   'ui.every.week': 'Every week',
-  'ui.cal.main': 'Cuaderno',
+  'ui.cal.main': 'OMNIA',
   'ui.cal.birthdays': 'Birthdays',
   'ui.cal.holidays': 'Public holidays',
   'ui.starter.home': 'Home',

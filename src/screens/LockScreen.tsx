@@ -38,7 +38,7 @@ export function LockScreen({ onUnlocked }: { onUnlocked: () => Promise<void> }) 
   return (
     <div className="lock" role="dialog" aria-label={t('set.lock.label')}>
       <section className="lock-box">
-        <h1>Cuaderno</h1>
+        <h1>OMNIA</h1>
         <p className="muted">{t('set.lock.protected')}</p>
         {mode === 'pw' ? (
           <>

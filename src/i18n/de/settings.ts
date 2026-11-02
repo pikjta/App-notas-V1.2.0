@@ -77,6 +77,7 @@ export const settings: Part<typeof Es> = {
   'set.data.spaceHint': 'Auf diesem Computer gespeicherte Daten.',
   'set.data.wipe': 'Alle Daten löschen',
   'set.data.wipeHint': 'Löscht alles, was auf diesem Computer gespeichert ist.',
+  'set.data.uninstallHint': "Möchtest du OMNIA deinstallieren? Das System löscht deine Daten beim Deinstallieren nicht: Lösche sie vorher hier, wenn sie nach einer Neuinstallation nicht wieder auftauchen sollen. Außerhalb der App gespeicherte Sicherungen werden nicht gelöscht.",
   'set.data.wipeAsk': 'Wirklich? Exportiere vorher am besten eine Sicherung.',
   'set.data.wipeBtn': 'Löschen…',
   'set.data.wipeConfirm': 'Ja, alles löschen',
@@ -148,12 +149,12 @@ export const settings: Part<typeof Es> = {
   'set.sec.generateNew': 'Neue erzeugen…',
   'set.sec.disableHint': 'Deine Daten werden wieder unverschlüsselt gespeichert.',
   'set.sec.disableBtn': 'Deaktivieren…',
-  'set.sec.wordsFileTitle': 'Cuaderno · Wiederherstellungswörter',
+  'set.sec.wordsFileTitle': 'OMNIA · Wiederherstellungswörter',
 
   // Settings.tsx · Backup
   'set.backup.downloads': 'Downloads',
   'set.backup.created': 'Sicherung erstellt',
-  'set.backup.notBackup': 'Diese Datei scheint keine Cuaderno-Sicherung zu sein.',
+  'set.backup.notBackup': 'Diese Datei scheint keine OMNIA-Sicherung zu sein.',
   'set.backup.unreadable': 'Die Datei konnte nicht gelesen werden',
   'set.backup.imported.one': 'Sicherung importiert · {n} Element',
   'set.backup.imported.other': 'Sicherung importiert · {n} Elemente',
@@ -234,7 +235,7 @@ export const settings: Part<typeof Es> = {
   'set.remind.denied': 'Das System erlaubt keine Hinweise: Aktiviere sie in den Systemeinstellungen.',
 
   // LockScreen.tsx
-  'set.lock.label': 'Cuaderno gesperrt',
+  'set.lock.label': 'OMNIA gesperrt',
   'set.lock.protected': 'Deine Daten sind auf diesem Gerät verschlüsselt.',
   'set.lock.decrypting': 'Wird entschlüsselt…',
   'set.lock.unlock': 'Entsperren',
@@ -255,13 +256,13 @@ export const settings: Part<typeof Es> = {
   // lib/backend.ts
   'set.backend.fail': 'Die Aktion konnte nicht abgeschlossen werden.',
   'set.backend.noUpdate': 'Es wurde kein Update heruntergeladen.',
-  'set.backend.filterBackup': 'Cuaderno-Sicherung',
+  'set.backend.filterBackup': 'OMNIA-Sicherung',
   'set.backend.filterCalendar': 'Kalender',
   'set.backend.locked': 'Das Notizbuch ist gesperrt.',
   'set.backend.noPending': 'Es steht keine Aktivierung der Verschlüsselung zur Bestätigung aus.',
   'set.backend.invalidWords': 'Die Wiederherstellungswörter sind ungültig: Wort Nr. {n} stimmt nicht überein.',
   'set.backend.wrongWords': 'Diese Wörter gehören nicht zu diesem Notizbuch.',
-  'set.backend.notBackupFile': 'Die Datei ist keine Cuaderno-Sicherung.',
+  'set.backend.notBackupFile': 'Die Datei ist keine OMNIA-Sicherung.',
   'set.backend.encryptionOff': 'Die Verschlüsselung ist nicht aktiviert.',
   'set.backend.quickOff': 'Die Schnellentsperrung ist nicht aktiviert.',
   'set.backend.browserVersion': 'Browser',

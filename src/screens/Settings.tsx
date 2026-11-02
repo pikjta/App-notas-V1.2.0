@@ -7,7 +7,7 @@ import { notificationsAllowed, notify, playChime } from '../lib/notify';
 import { COUNTRIES } from '../lib/holidays';
 import type { Country } from '../lib/holidays';
 import { locale, t, tn } from '../i18n';
-import { AUTO_EVERY, INTERNAL_EVERY, LANGUAGES, starterDocs } from '../lib/model';
+import { AUTO_EVERY, INTERNAL_EVERY, LANGUAGES } from '../lib/model';
 import type { Language } from '../lib/model';
 import { GRID_SIZES } from '../lib/appearance';
 
@@ -142,10 +142,8 @@ function DataSettings({ setTab }: { setTab: (t: Tab) => void }) {
   const wipe = async () => {
     setStep('busy');
     try {
-      const ids = (await backend.all()).map((d) => d.id);
-      await backend.remove(ids);
-      await backend.put(starterDocs());
-      await reload();
+      await backend.wipeAll();
+      await reload(true);
       toast(t('set.data.wiped'));
     } finally { setStep('idle'); }
   };
@@ -160,7 +158,7 @@ function DataSettings({ setTab }: { setTab: (t: Tab) => void }) {
         <b>{size}</b>
       </div>
       <div className="srow">
-        <div><h3>{t('set.data.wipe')}</h3><p className="muted">{step === 'ask' ? t('set.data.wipeAsk') : t('set.data.wipeHint')}</p></div>
+        <div><h3>{t('set.data.wipe')}</h3><p className="muted">{step === 'ask' ? t('set.data.wipeAsk') : t('set.data.wipeHint')}</p>{step === 'idle' && <p className="muted">{t('set.data.uninstallHint')}</p>}</div>
         {step === 'idle' && <button className="danger" onClick={() => setStep('ask')}>{t('set.data.wipeBtn')}</button>}
         {step !== 'idle' && <div className="row"><button className="tool" disabled={step === 'busy'} onClick={() => setStep('idle')}>{t('set.cancel')}</button><button className="danger" disabled={step === 'busy'} onClick={() => void wipe()}>{t('set.data.wipeConfirm')}</button></div>}
       </div>
@@ -393,7 +391,7 @@ function Backups() {
     try {
       const path = await backend.pickOpenPath();
       if (path) setInfo({ ...(await backend.backupInspect(path)), path });
-    } catch (e) { setErr(/copia|Cuaderno/i.test(errorText(e)) ? t('set.backup.notBackup') : t('set.backup.unreadable')); }
+    } catch (e) { setErr(/copia|Cuaderno|OMNIA/i.test(errorText(e)) ? t('set.backup.notBackup') : t('set.backup.unreadable')); }
   };
   const importNow = async () => {
     if (!info) return;
@@ -553,7 +551,7 @@ function RemindSettings() {
       </div>
       <div className="srow">
         <div><h3>{t('set.remind.test')}</h3><p className="muted">{t('set.remind.testHint')}</p></div>
-        <button className="tool" onClick={async () => { if (await notificationsAllowed(true)) { await notify('Cuaderno', t('set.remind.testBody')); if (s.sound) playChime(); setAllowed(true); } else toast(t('set.remind.denied')); }}>{t('set.remind.send')}</button>
+        <button className="tool" onClick={async () => { if (await notificationsAllowed(true)) { await notify('OMNIA', t('set.remind.testBody')); if (s.sound) playChime(); setAllowed(true); } else toast(t('set.remind.denied')); }}>{t('set.remind.send')}</button>
       </div>
     </div>
   );

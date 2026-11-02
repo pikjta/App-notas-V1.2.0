@@ -35,7 +35,8 @@ type Ctx = {
   status: Status;
   refreshStatus: () => Promise<void>;
   lock: () => Promise<void>;
-  reload: () => Promise<void>;
+  /** Recarga desde el almacén. Con `true` se borra también el historial de deshacer. */
+  reload: (clearHistory?: boolean) => Promise<void>;
   toast: (msg: string) => void;
   openSettings: (tab?: SettingsTab) => void;
   undo: () => void;
@@ -181,9 +182,10 @@ export default function App() {
     setStatus(await backend.status());
   }, [backend, saver]);
 
-  const reload = useCallback(async () => {
+  const reload = useCallback(async (clearHistory?: boolean) => {
     if (!backend) return;
     await saver?.flush();
+    if (clearHistory) history.current.clear();
     const st = await backend.status();
     setStatus(st);
     if (!st.locked) await load(backend);

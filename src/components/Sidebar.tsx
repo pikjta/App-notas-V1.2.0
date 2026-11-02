@@ -171,10 +171,10 @@ export function Sidebar() {
       <div className="brand-row">
         {renamingSession ? (
           <input className="brand brand-input" aria-label={t('ui.side.sessionName')} autoFocus defaultValue={state.settings.sessionName} style={fontCss(sessionFont, 'session')}
-            onBlur={(e) => { dispatch({ t: 'settings', patch: { sessionName: e.target.value.trim() || 'Cuaderno' } }); setRenamingSession(false); }}
+            onBlur={(e) => { dispatch({ t: 'settings', patch: { sessionName: e.target.value.trim() || 'OMNIA' } }); setRenamingSession(false); }}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur(); }} />
         ) : (
-          <button className="brand side-name-btn" style={fontCss(sessionFont, 'session')} title={t('ui.side.sessionRename')} onClick={() => setRenamingSession(true)}>{state.settings.sessionName || 'Cuaderno'}</button>
+          <button className="brand side-name-btn" style={fontCss(sessionFont, 'session')} title={t('ui.side.sessionRename')} onClick={() => setRenamingSession(true)}>{state.settings.sessionName || 'OMNIA'}</button>
         )}
         <button className="icon-btn small" title={t('ui.side.nameFont')} aria-label={t('ui.side.nameFont')} onClick={() => setFontOpen(true)}>Aa</button>
       </div>

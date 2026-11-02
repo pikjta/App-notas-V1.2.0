@@ -75,6 +75,7 @@ export const settings = {
   'set.data.spaceHint': 'Datos guardados en este ordenador.',
   'set.data.wipe': 'Borrar todos los datos',
   'set.data.wipeHint': 'Elimina todo lo guardado en este ordenador.',
+  'set.data.uninstallHint': "¿Vas a desinstalar OMNIA? El sistema no borra tus datos al desinstalar: bórralos aquí antes si no quieres que reaparezcan al reinstalar. Las copias de seguridad guardadas fuera de la app no se borran.",
   'set.data.wipeAsk': '¿Seguro? Te recomendamos exportar una copia antes.',
   'set.data.wipeBtn': 'Borrar…',
   'set.data.wipeConfirm': 'Sí, borrar todo',
@@ -146,12 +147,12 @@ export const settings = {
   'set.sec.generateNew': 'Generar nuevas…',
   'set.sec.disableHint': 'Tus datos volverán a guardarse sin cifrar.',
   'set.sec.disableBtn': 'Desactivar…',
-  'set.sec.wordsFileTitle': 'Cuaderno · palabras de recuperación',
+  'set.sec.wordsFileTitle': 'OMNIA · palabras de recuperación',
 
   // Settings.tsx · Backup
   'set.backup.downloads': 'Descargas',
   'set.backup.created': 'Copia creada',
-  'set.backup.notBackup': 'Este archivo no parece una copia de Cuaderno.',
+  'set.backup.notBackup': 'Este archivo no parece una copia de OMNIA.',
   'set.backup.unreadable': 'No se pudo leer el archivo',
   'set.backup.imported.one': 'Copia importada · {n} elemento',
   'set.backup.imported.other': 'Copia importada · {n} elementos',
@@ -232,7 +233,7 @@ export const settings = {
   'set.remind.denied': 'El sistema no permite avisos: actívalos en los ajustes de tu sistema.',
 
   // LockScreen.tsx
-  'set.lock.label': 'Cuaderno bloqueado',
+  'set.lock.label': 'OMNIA bloqueado',
   'set.lock.protected': 'Tus datos están cifrados en este dispositivo.',
   'set.lock.decrypting': 'Descifrando…',
   'set.lock.unlock': 'Desbloquear',
@@ -253,13 +254,13 @@ export const settings = {
   // lib/backend.ts
   'set.backend.fail': 'No se pudo completar la acción.',
   'set.backend.noUpdate': 'No hay ninguna actualización descargada.',
-  'set.backend.filterBackup': 'Copia de Cuaderno',
+  'set.backend.filterBackup': 'Copia de OMNIA',
   'set.backend.filterCalendar': 'Calendario',
   'set.backend.locked': 'El cuaderno está bloqueado.',
   'set.backend.noPending': 'No hay ninguna activación de cifrado pendiente de confirmar.',
   'set.backend.invalidWords': 'Las palabras de recuperación no son válidas: la palabra n.º {n} no coincide.',
   'set.backend.wrongWords': 'Esas palabras no corresponden a este cuaderno.',
-  'set.backend.notBackupFile': 'El archivo no es una copia de seguridad de Cuaderno.',
+  'set.backend.notBackupFile': 'El archivo no es una copia de seguridad de OMNIA.',
   'set.backend.encryptionOff': 'El cifrado no está activado.',
   'set.backend.quickOff': 'El desbloqueo rápido no está activado.',
   'set.backend.browserVersion': 'navegador',

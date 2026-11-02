@@ -52,7 +52,7 @@ export const app = {
   'ui.every.h12': 'Cada 12 horas',
   'ui.every.day': 'Cada día',
   'ui.every.week': 'Cada semana',
-  'ui.cal.main': 'Cuaderno',
+  'ui.cal.main': 'OMNIA',
   'ui.cal.birthdays': 'Cumpleaños',
   'ui.cal.holidays': 'Festivos',
   'ui.starter.home': 'Inicio',

@@ -121,7 +121,7 @@ export function CalendarView() {
       }
     }
     try {
-      const ok = await backend.saveIcs(t('cal.export.file'), toIcs('Cuaderno', evs));
+      const ok = await backend.saveIcs(t('cal.export.file'), toIcs('OMNIA', evs));
       if (ok) toast(tn('cal.export.done', evs.length));
     } catch (e) { toast(typeof e === 'string' ? e : t('cal.export.error')); }
   };
