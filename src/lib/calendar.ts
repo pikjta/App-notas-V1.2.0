@@ -99,7 +99,7 @@ export function itemsBetween(s: State, from: string, to: string): CalItem[] {
     }
   }
 
-  // Recordatorios de los tableros, en el calendario «Cuaderno».
+  // Recordatorios de los tableros, en el calendario «OMNIA».
   const main = s.calendars.find((c) => c.kind === 'main');
   if (main?.visible) {
     const live = new Map(s.projects.filter((p) => !p.trashed).map((p) => [p.id, p]));

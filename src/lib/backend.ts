@@ -24,6 +24,8 @@ export interface Backend {
   changePassword(current: string, next: string): Promise<void>;
   rotateWords(current: string): Promise<string[]>;
   disable(current: string): Promise<void>;
+  /** Borra de verdad todos los datos (base de datos, cabecera de cifrado y llavero) y deja un almacén nuevo. */
+  wipeAll(): Promise<void>;
   backupExport(path: string): Promise<void>;
   backupInspect(path: string): Promise<BackupInfo>;
   backupImport(path: string, secret: string | null, words: boolean): Promise<number>;
@@ -94,6 +96,7 @@ export async function tauriBackend(): Promise<Backend> {
     changePassword: (current, next) => invoke('vault_change_password', { current, next }),
     rotateWords: (current) => invoke('vault_rotate_words', { current }),
     disable: (current) => invoke('vault_disable', { current }),
+    wipeAll: () => invoke('data_wipe_all'),
     backupExport: (path) => invoke('backup_export', { path }),
     backupInspect: (path) => invoke('backup_inspect', { path }),
     backupImport: (path, secret, words) => invoke('backup_import', { path, secret, words }),
@@ -213,6 +216,7 @@ export function memoryBackend(initial: Doc[] = []): Backend {
       pw = n;
     },
     rotateWords: async (c) => { if (c !== pw) throw t('set.password.wrong'); words = sample(true); return words; },
+    wipeAll: async () => { docs = new Map(); pw = null; words = null; pending = null; locked = false; quick = false; snaps.length = 0; },
     disable: async (c) => { if (c !== pw) throw t('set.password.wrong'); pw = null; words = null; quick = false; },
     backupExport: async (path) => { need(); files.set(path, JSON.stringify([...docs.values()])); },
     backupInspect: async (path) => {

@@ -32,6 +32,6 @@ describe('apariencia (etapa 6)', () => {
     expect(String(css.fontFamily)).toContain('Courier');
   });
   it('los ajustes nuevos tienen valores por defecto', () => {
-    expect(DEFAULT_SETTINGS).toMatchObject({ sessionName: 'Cuaderno', hour12: false, focus: 'soft', snapOnOpen: true, reduceMotion: false, showMissed: true });
+    expect(DEFAULT_SETTINGS).toMatchObject({ sessionName: 'OMNIA', hour12: false, focus: 'soft', snapOnOpen: true, reduceMotion: false, showMissed: true });
   });
 });

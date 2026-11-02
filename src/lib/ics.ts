@@ -38,7 +38,7 @@ const dateOnly = (iso: string) => iso.slice(0, 10).replace(/-/g, '');
  */
 export function toIcs(name: string, events: IcsEvent[], now = new Date()): string {
   const stamp = utc(now.toISOString());
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Cuaderno//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:' + esc(name)];
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//OMNIA//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:' + esc(name)];
   for (const e of events) {
     lines.push('BEGIN:VEVENT', 'UID:' + e.uid, 'DTSTAMP:' + stamp);
     if (e.allDay) {

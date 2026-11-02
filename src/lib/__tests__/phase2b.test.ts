@@ -109,7 +109,7 @@ describe('eventos y calendarios en el estado', () => {
     const e = reduce(loaded(), { t: 'importEvents', calendar: cal, target: 'c9', events: [{ id: 'x', calendar: '', title: 'A', start: '2026-10-01', end: '2026-10-01', allDay: true, note: '' }] });
     expect(e.put.map((d) => d.kind)).toEqual(['calendar', 'event']);
     const reloaded = fromDocs([...starterDocs(), ...e.put]);
-    expect(reloaded.calendars.map((c) => c.name)).toEqual(['Cuaderno', 'Cumpleaños', 'Festivos', 'Trabajo']);
+    expect(reloaded.calendars.map((c) => c.name)).toEqual(['OMNIA', 'Cumpleaños', 'Festivos', 'Trabajo']);
     expect(reloaded.events[0]).toMatchObject({ calendar: 'c9', title: 'A', allDay: true });
   });
 });

@@ -14,10 +14,10 @@ describe('Calendario', () => {
     await user.click(screen.getByText('Calendario'));
     // Los calendarios se eligen en el desplegable de la barra inferior.
     await user.click(screen.getByRole('button', { name: /Calendarios/ }));
-    expect(screen.getByLabelText('Mostrar Cuaderno')).toBeTruthy();
+    expect(screen.getByLabelText('Mostrar OMNIA')).toBeTruthy();
     expect(screen.getByLabelText('Mostrar Festivos')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /Calendarios/ }));
-    expect(screen.queryByLabelText('Mostrar Cuaderno')).toBeNull();
+    expect(screen.queryByLabelText('Mostrar OMNIA')).toBeNull();
 
     await user.click(screen.getByText('+ Añadir recordatorio'));
     const dlg = screen.getByRole('dialog', { name: 'Nota o recordatorio' });
@@ -34,19 +34,19 @@ describe('Calendario', () => {
     await user.click(within(edit).getByText('Guardar'));
     expect(screen.getAllByText(/Presentación de bocetos/).length).toBeGreaterThan(0);
 
-    // Exportar «Cuaderno» e importarlo como calendario nuevo.
+    // Exportar «OMNIA» e importarlo como calendario nuevo.
     await user.click(screen.getByRole('button', { name: 'Ajustes del calendario' }));
     await user.click(screen.getByText('Exportar calendarios visibles'));
     await screen.findByText(/Exportados \d+ eventos/);
     await user.click(screen.getByText('Importar un archivo .ics'));
-    await screen.findByText(/Importados \d+ eventos en «Cuaderno»/);
+    await screen.findByText(/Importados \d+ eventos en «OMNIA»/);
     await user.click(screen.getByRole('button', { name: 'Cerrar' }));
     await user.click(screen.getByRole('button', { name: /Calendarios/ }));
-    expect(screen.getAllByLabelText('Mostrar Cuaderno')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Mostrar OMNIA')).toHaveLength(2);
 
     // Ocultar un calendario quita sus eventos.
     const before = screen.getAllByText(/Presentación de bocetos/).length;
-    await user.click(screen.getAllByLabelText('Mostrar Cuaderno')[1]);
+    await user.click(screen.getAllByLabelText('Mostrar OMNIA')[1]);
     expect(screen.getAllByText(/Presentación de bocetos/).length).toBe(before - 1);
 
     // Búsqueda ⌘K → abre el evento.

@@ -5,7 +5,7 @@ import type { Country } from './holidays';
 import type { IconStyle, ViewIcons } from './icons';
 import { t, tIn } from '../i18n';
 import { DEFAULT_COLOR_ICON, DEFAULT_ICON_STYLE, normalizeColorIcon, normalizeIconStyle, normalizeViewIcons } from './icons';
-// Modelo de datos de Cuaderno. Todo se guarda como documentos { id, kind, parent, pos, data }
+// Modelo de datos de OMNIA. Todo se guarda como documentos { id, kind, parent, pos, data }
 // en el núcleo de Rust; estos tipos son la forma que tienen esos datos en la interfaz.
 
 export type Doc = { id: string; kind: string; parent: string | null; pos: number; updated: number; data: unknown };
@@ -131,7 +131,7 @@ export type Settings = {
 
 export type CalView = 'day' | 'week' | 'month' | 'agenda';
 export type CalendarKind = 'main' | 'birthdays' | 'holidays' | 'user';
-/** «main» (Cuaderno) reúne los recordatorios de los tableros y los eventos sueltos; «holidays» se calcula. */
+/** «main» (OMNIA) reúne los recordatorios de los tableros y los eventos sueltos; «holidays» se calcula. */
 export type Calendar = { id: string; name: string; color: string; kind: CalendarKind; visible: boolean; pos: number };
 /** Evento de calendario. Si `allDay`, `start` y `end` son «AAAA-MM-DD» (fin incluido); si no, fechas ISO. */
 export type Repeat = 'none' | 'week' | 'month' | 'year';
@@ -198,7 +198,7 @@ export function normalizeBackup(raw: Partial<Settings> & { autoBackup?: { dir?: 
   return base;
 }
 
-export const DEFAULT_SETTINGS: Settings = { sessionName: 'Cuaderno', sessionFont: DEFAULT_SESSION_FONT, side: DEFAULT_SIDE, iconStyle: DEFAULT_ICON_STYLE, colorIcon: DEFAULT_COLOR_ICON, viewIcons: {}, lang: 'es', hour12: false, sound: false, showMissed: true, focus: 'soft', snapOnOpen: true, reduceMotion: false, autoLockMinutes: 15, snap: true, grid: 24, notify: true, leadMin: 0, country: 'ES', weekStart: 1, dayStart: 7, dayEnd: 22, calView: 'month', weekNumbers: false, calLook: DEFAULT_CALLOOK, backup: DEFAULT_BACKUP, updateCheck: true };
+export const DEFAULT_SETTINGS: Settings = { sessionName: 'OMNIA', sessionFont: DEFAULT_SESSION_FONT, side: DEFAULT_SIDE, iconStyle: DEFAULT_ICON_STYLE, colorIcon: DEFAULT_COLOR_ICON, viewIcons: {}, lang: 'es', hour12: false, sound: false, showMissed: true, focus: 'soft', snapOnOpen: true, reduceMotion: false, autoLockMinutes: 15, snap: true, grid: 24, notify: true, leadMin: 0, country: 'ES', weekStart: 1, dayStart: 7, dayEnd: 22, calView: 'month', weekNumbers: false, calLook: DEFAULT_CALLOOK, backup: DEFAULT_BACKUP, updateCheck: true };
 
 export function uid(prefix: string): string {
   const r = new Uint8Array(8);
