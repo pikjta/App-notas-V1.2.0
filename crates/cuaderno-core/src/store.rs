@@ -687,6 +687,77 @@ impl Store {
         Ok(docs.len())
     }
 
+    /// Borra TODOS los datos del usuario y deja el almacén como recién instalado: cierra la base de
+    /// datos, sobrescribe con ceros (mejor esfuerzo) y elimina el archivo, su WAL, la cabecera del
+    /// cifrado (`cuaderno.vault.json`) y los temporales, y abre una base nueva y vacía. También quita
+    /// el cifrado y el desbloqueo rápido. Devuelve la cuenta del llavero del sistema (si había
+    /// desbloqueo rápido) para que quien llama borre ahí la clave.
+    ///
+    /// Las copias de seguridad que el usuario guardó fuera (carpeta de backup, Descargas…) no se tocan.
+    pub fn wipe_all(&mut self) -> Result<Option<String>> {
+        let account = self.quick.as_ref().map(|q| q.account.clone());
+        self.pending = None;
+        self.dek = None;
+        // Se suelta la conexión antes de borrar: en Windows no se puede eliminar un archivo abierto.
+        self.conn = None;
+        let Some(path) = self.path.clone() else {
+            // Sin archivo (pruebas en memoria): se vacían las tablas.
+            let c = Connection::open_in_memory()?;
+            Self::setup(&c)?;
+            self.conn = Some(c);
+            self.header = None;
+            self.quick = None;
+            return Ok(account);
+        };
+        let mut files = vec![path.clone()];
+        for ext in ["db-wal", "db-shm", "db-journal", "db.enc-tmp"] {
+            files.push(path.with_extension(ext));
+        }
+        let side = Self::sidecar_path(&path);
+        files.push(side.with_extension("json.tmp"));
+        files.push(side);
+        let mut first_err: Option<std::io::Error> = None;
+        for f in &files {
+            Self::zero_file(f);
+            match fs::remove_file(f) {
+                Ok(()) => {}
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => {
+                    first_err.get_or_insert(e);
+                }
+            }
+        }
+        // Se vuelve a abrir lo que haya en disco (normalmente nada: base nueva y vacía; si algún
+        // archivo no se pudo borrar, el almacén queda en un estado coherente con lo que sigue ahí).
+        let fresh = Self::open(&path)?;
+        self.conn = fresh.conn;
+        self.header = fresh.header;
+        self.quick = fresh.quick;
+        match first_err {
+            Some(e) => Err(e.into()),
+            None => Ok(account),
+        }
+    }
+
+    /// Sobrescribe con ceros el contenido de un archivo (mejor esfuerzo; ignora cualquier fallo).
+    fn zero_file(path: &Path) {
+        if let Ok(meta) = fs::metadata(path) {
+            if let Ok(mut f) = fs::OpenOptions::new().write(true).open(path) {
+                use std::io::Write;
+                let zeros = vec![0u8; 64 * 1024];
+                let mut left = meta.len();
+                while left > 0 {
+                    let n = left.min(zeros.len() as u64) as usize;
+                    if f.write_all(&zeros[..n]).is_err() {
+                        break;
+                    }
+                    left -= n as u64;
+                }
+                let _ = f.sync_all();
+            }
+        }
+    }
+
     /// Solo para pruebas: la ruta de la base de datos.
     #[doc(hidden)]
     pub fn db_path(&self) -> Option<&Path> {

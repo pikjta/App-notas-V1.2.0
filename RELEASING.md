@@ -1,4 +1,4 @@
-# Publicar versiones y actualizaciones de Cuaderno
+# Publicar versiones y actualizaciones de OMNIA
 
 Las actualizaciones están **firmadas**: cada versión se firma con una clave privada que solo
 tienes tú, y las apps instaladas solo aceptan versiones firmadas con ella. Así nadie puede

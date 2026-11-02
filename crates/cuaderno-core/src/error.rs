@@ -21,11 +21,11 @@ pub enum CoreError {
     NoPendingSetup,
     #[error("Los datos están dañados o han sido modificados.")]
     Tampered,
-    #[error("El archivo no es una copia de seguridad de Cuaderno.")]
+    #[error("El archivo no es una copia de seguridad de OMNIA.")]
     NotABackup,
     #[error("Esta copia está cifrada: hace falta su contraseña o sus palabras.")]
     BackupNeedsSecret,
-    #[error("Este cuaderno se guardó con una versión anterior de Cuaderno que cifraba de otra forma. Restaura una copia de seguridad en un cuaderno nuevo.")]
+    #[error("Este cuaderno se guardó con una versión anterior de OMNIA que cifraba de otra forma. Restaura una copia de seguridad en un cuaderno nuevo.")]
     LegacyFormat,
     #[error("Error de la base de datos: {0}")]
     Db(#[from] rusqlite::Error),

@@ -1,4 +1,4 @@
-# Cuaderno
+# OMNIA
 
 **Agenda, tableros de notas y gestor de proyectos en tu ordenador. Sin cuentas, sin servidor y con cifrado opcional.**
 
@@ -9,7 +9,7 @@
 ![Plataformas](https://img.shields.io/badge/macOS%20·%20Windows%20·%20Linux-lightgrey)
 ![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green)
 
-Cuaderno reúne en una sola app lo que normalmente se reparte entre una agenda, un tablero de notas, un gestor de proyectos estilo Notion, un calendario y un diario de trabajo. Está pensada para quien lleva varios proyectos a la vez (por ejemplo, encargos artísticos o de ilustración) y quiere verlos de forma visual, planificarlos con detalle y tener los datos solo en su equipo.
+OMNIA reúne en una sola app lo que normalmente se reparte entre una agenda, un tablero de notas, un gestor de proyectos estilo Notion, un calendario y un diario de trabajo. Está pensada para quien lleva varios proyectos a la vez (por ejemplo, encargos artísticos o de ilustración) y quiere verlos de forma visual, planificarlos con detalle y tener los datos solo en su equipo.
 
 > La interfaz está disponible en **español, inglés, francés, portugués, italiano y alemán**. En el primer arranque usa el idioma del sistema (inglés si no coincide ninguno) y se cambia en **Ajustes → General → Idioma**.
 
@@ -57,7 +57,7 @@ Cuaderno reúne en una sola app lo que normalmente se reparte entre una agenda, 
 
 ## Instalación
 
-Cuaderno aún no tiene instaladores publicados. Los instaladores **sin firmar** se generan con GitHub Actions:
+OMNIA aún no tiene instaladores publicados. Los instaladores **sin firmar** se generan con GitHub Actions:
 
 1. Ve a la pestaña **Actions** del repositorio.
 2. Elige el workflow de tu sistema (**Windows**, **Ubuntu** o **macOS**) y pulsa **Run workflow**.
@@ -72,7 +72,7 @@ Cuaderno aún no tiene instaladores publicados. Los instaladores **sin firmar** 
 Como no están firmados, el sistema puede avisarte al abrirlos:
 
 - **Windows:** aparece SmartScreen («Más información» → «Ejecutar de todas formas»).
-- **macOS:** la app lleva una firma ad-hoc, sin cuenta de Apple. Si aun así aparece «La app está dañada y no se puede abrir», no está dañada: macOS bloquea lo descargado sin firma de Apple. Arrastra Cuaderno a Aplicaciones y ejecuta en Terminal `xattr -cr /Applications/Cuaderno.app`; después ábrela con normalidad.
+- **macOS:** la app lleva una firma ad-hoc, sin cuenta de Apple. Si aun así aparece «La app está dañada y no se puede abrir», no está dañada: macOS bloquea lo descargado sin firma de Apple. Arrastra OMNIA a Aplicaciones y ejecuta en Terminal `xattr -cr /Applications/OMNIA.app`; después ábrela con normalidad.
 
 También puedes compilar tú mismo, como se explica a continuación.
 
@@ -138,9 +138,22 @@ src/                     Interfaz en React y TypeScript
   - macOS: `~/Library/Application Support/app.cuaderno.desktop/`
   - Windows: `%APPDATA%\app.cuaderno.desktop\`
   - Linux: `~/.local/share/app.cuaderno.desktop/`
+  - Además de `cuaderno.db` (y sus `-wal` / `-shm`) está `cuaderno.vault.json`, con la cabecera de cifrado y el desbloqueo rápido. Con el desbloqueo rápido activo, la clave también vive en el llavero del sistema.
 - Todo son **documentos** `{ id, kind, parent, pos, updated, data }` con `data` en JSON. Añadir un tipo nuevo de tarjeta no requiere cambiar la base de datos.
 - Las imágenes se guardan como documentos aparte, dentro de la base de datos cifrada.
 - La interfaz junta los cambios y los guarda en una sola transacción cada 250 ms.
+
+### Nombre interno y compatibilidad
+
+La app se llama OMNIA, pero por dentro conserva el identificador `app.cuaderno.desktop`, los archivos `cuaderno.db` y `cuaderno.vault.json`, los prefijos de las copias automáticas (`cuaderno_auto_`…) y las marcas internas de las copias y del cifrado. Es a propósito: así las instalaciones y copias de seguridad anteriores a la marca OMNIA siguen funcionando y se actualizan sin perder datos. No lo cambies sin escribir antes una migración.
+
+### Desinstalar y borrar tus datos
+
+Desinstalar la app **no borra tus datos**: los sistemas operativos dejan intacta la carpeta de datos. Si reinstalas, verás tus tarjetas de nuevo. Para empezar de cero:
+
+- **Desde la app (recomendado, antes de desinstalar):** Ajustes → Datos → «Borrar todos los datos». Elimina de verdad la base de datos, la cabecera de cifrado y la entrada del llavero (los archivos se sobrescriben con ceros antes de borrarse, en la medida en que el disco lo permita) y deja un cuaderno nuevo. Las copias de seguridad que guardaste fuera de la app no se tocan.
+- **Windows, con el instalador `.exe` (NSIS):** el desinstalador de Tauri 2 ofrece la casilla «Delete the application data» (en inglés salvo que se configuren otros idiomas del instalador). *Sin verificar todavía en una desinstalación real.* El instalador `.msi` no tiene esa casilla.
+- **A mano:** cierra la app y borra la carpeta `app.cuaderno.desktop` indicada arriba. Si usabas el desbloqueo rápido, borra también la entrada `app.cuaderno.desktop` del llavero (Administrador de credenciales de Windows, Acceso a Llaveros de macOS o el gestor de secretos de tu sesión en Linux).
 
 ### Idiomas
 
@@ -178,7 +191,7 @@ Cada copia se escribe primero en un archivo temporal para que nunca quede a medi
 
 La carpeta [`Doc/`](Doc) contiene los tres documentos que definen la app:
 
-- **Spec global**: qué es Cuaderno, sus principios y sus áreas principales.
+- **Spec global**: qué es OMNIA, sus principios y sus áreas principales.
 - **Funciones de la maqueta**: inventario completo de funciones, con sus textos y opciones.
 - **Plan de implementación por etapas**: decisiones técnicas, etapas y registro de lo hecho.
 

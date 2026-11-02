@@ -86,9 +86,9 @@ pub fn confirm_presence(reason: &str) -> Result<(), String> {
         .build()
         .ok_or("No se pudo preparar la autenticación del sistema.")?;
     let text = Text {
-        android: AndroidText { title: "Cuaderno", subtitle: None, description: None },
+        android: AndroidText { title: "OMNIA", subtitle: None, description: None },
         apple: reason,
-        windows: WindowsText::new_truncated("Cuaderno", reason),
+        windows: WindowsText::new_truncated("OMNIA", reason),
     };
     let (tx, rx) = mpsc::channel();
     Context::new(())

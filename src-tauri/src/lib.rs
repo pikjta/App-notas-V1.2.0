@@ -94,6 +94,20 @@ async fn vault_disable(state: State<'_, AppState>, current: String) -> CmdResult
     Ok(())
 }
 
+/// Borra TODOS los datos de esta instalación (base de datos, copias internas, cabecera del cifrado
+/// y la clave del llavero del sistema) y deja la app como recién instalada. Es lo que hay que hacer
+/// antes de desinstalar si no se quiere que los datos reaparezcan al reinstalar: el sistema no
+/// borra la carpeta de datos del usuario al desinstalar. Las copias de seguridad guardadas fuera
+/// (carpeta de backup, Descargas…) no se tocan.
+#[tauri::command]
+fn data_wipe_all(state: State<AppState>) -> CmdResult<()> {
+    let account = with(&state, |s| s.wipe_all())?;
+    if let Some(a) = account {
+        let _ = cuaderno_os::delete_secret(&a);
+    }
+    Ok(())
+}
+
 // ---------- Desbloqueo rápido (llavero del sistema + Touch ID / Windows Hello) ----------
 
 #[derive(Serialize)]
@@ -118,7 +132,7 @@ fn quick_unlock_info(state: State<AppState>) -> CmdResult<QuickInfo> {
 /// Activa el desbloqueo rápido: pide Touch ID / Windows Hello, guarda la clave en el llavero.
 #[tauri::command]
 async fn quick_unlock_enable(state: State<'_, AppState>) -> CmdResult<()> {
-    tauri::async_runtime::spawn_blocking(|| cuaderno_os::confirm_presence("activar el desbloqueo rápido de Cuaderno"))
+    tauri::async_runtime::spawn_blocking(|| cuaderno_os::confirm_presence("activar el desbloqueo rápido de OMNIA"))
         .await
         .map_err(|e| os_err(e.to_string()))?
         .map_err(os_err)?;
@@ -143,7 +157,7 @@ fn quick_unlock_disable(state: State<AppState>) -> CmdResult<()> {
 #[tauri::command]
 async fn quick_unlock(state: State<'_, AppState>) -> CmdResult<()> {
     let account = with(&state, |s| s.quick_account())?.ok_or(CoreError::NotEncrypted)?;
-    tauri::async_runtime::spawn_blocking(|| cuaderno_os::confirm_presence("desbloquear Cuaderno"))
+    tauri::async_runtime::spawn_blocking(|| cuaderno_os::confirm_presence("desbloquear OMNIA"))
         .await
         .map_err(|e| os_err(e.to_string()))?
         .map_err(os_err)?;
@@ -340,6 +354,7 @@ pub fn run() {
             vault_change_password,
             vault_rotate_words,
             vault_disable,
+            data_wipe_all,
             backup_export,
             backup_inspect,
             backup_import,
@@ -362,5 +377,5 @@ pub fn run() {
             quick_unlock
         ])
         .run(tauri::generate_context!())
-        .expect("error al arrancar Cuaderno");
+        .expect("error al arrancar OMNIA");
 }

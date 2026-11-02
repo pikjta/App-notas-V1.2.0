@@ -360,3 +360,75 @@ fn quitar_el_cifrado_quita_el_desbloqueo_rapido() {
     s.disable_encryption(PW).unwrap();
     assert!(!s.status().unwrap().quick_unlock);
 }
+
+// ---------- borrar todos los datos (reinstalar = empezar de cero) ----------
+
+fn files_in(dir: &std::path::Path) -> Vec<String> {
+    let mut v: Vec<String> = std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().into_owned()).collect();
+    v.sort();
+    v
+}
+
+#[test]
+fn borrar_todo_sin_cifrado_deja_un_almacen_nuevo_y_vacio() {
+    let dir = tempfile::tempdir().unwrap();
+    let mut s = file_store(dir.path());
+    sample(&mut s);
+    s.snapshot_create(5).unwrap();
+    assert!(contains(&bytes_on_disk(dir.path()), "amanecer"));
+    assert_eq!(s.wipe_all().unwrap(), None);
+    assert_eq!(s.all_docs().unwrap().len(), 0, "no queda ninguna tarjeta");
+    assert_eq!(s.snapshot_list().unwrap().len(), 0, "ni copias internas");
+    assert!(!contains(&bytes_on_disk(dir.path()), "amanecer"), "el texto ya no está en disco");
+    assert!(!s.status().unwrap().encrypted);
+    // sigue funcionando después de borrar
+    sample(&mut s);
+    assert_eq!(s.all_docs().unwrap().len(), 2);
+    // y al «reinstalar» (abrir de nuevo la misma carpeta) solo está lo nuevo
+    drop(s);
+    let again = file_store(dir.path());
+    assert_eq!(again.all_docs().unwrap().len(), 2);
+}
+
+#[test]
+fn borrar_todo_con_cifrado_quita_la_cabecera_y_el_desbloqueo_rapido() {
+    let dir = tempfile::tempdir().unwrap();
+    let mut s = file_store(dir.path());
+    sample(&mut s);
+    enable(&mut s);
+    let (account, _key) = s.quick_enable().unwrap();
+    assert!(dir.path().join("cuaderno.vault.json").exists());
+    assert_eq!(s.wipe_all().unwrap(), Some(account));
+    let st = s.status().unwrap();
+    assert!(!st.encrypted && !st.locked && !st.quick_unlock, "vuelve a no estar cifrado");
+    assert_eq!(s.all_docs().unwrap().len(), 0);
+    assert!(!dir.path().join("cuaderno.vault.json").exists(), "la cabecera del cifrado se borra");
+    drop(s);
+    let again = file_store(dir.path());
+    let st = again.status().unwrap();
+    assert!(!st.encrypted && !st.locked, "al reabrir ya no pide contraseña");
+    assert_eq!(again.all_docs().unwrap().len(), 0);
+}
+
+#[test]
+fn borrar_todo_estando_bloqueado_tambien_funciona_y_no_deja_archivos_sueltos() {
+    let dir = tempfile::tempdir().unwrap();
+    let mut s = file_store(dir.path());
+    sample(&mut s);
+    enable(&mut s);
+    s.lock();
+    s.wipe_all().unwrap();
+    assert!(!s.status().unwrap().locked);
+    let names = files_in(dir.path());
+    assert!(names.iter().all(|n| n.starts_with("cuaderno.db")), "solo queda la base nueva: {names:?}");
+}
+
+#[test]
+fn borrar_todo_en_memoria_vacia_los_datos() {
+    let mut s = store();
+    sample(&mut s);
+    enable(&mut s);
+    s.wipe_all().unwrap();
+    assert_eq!(s.all_docs().unwrap().len(), 0);
+    assert!(!s.status().unwrap().encrypted);
+}

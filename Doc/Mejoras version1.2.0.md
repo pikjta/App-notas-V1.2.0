@@ -72,3 +72,37 @@ Registro de cada mejora: qué se pidió, qué se hizo y cómo se comprobó.
 ### Resumen de la mejora de idiomas (1.2.0)
 - 6 idiomas completos (es, en-GB, fr, pt-PT, it, de) con ~1.560 textos de interfaz + 169 de datos de ejemplo cada uno; plurales, decimales, fechas y alias de fórmulas por idioma.
 - Pendiente humano: revisar las traducciones (dudas listadas en cada fase) y probar con `npm run tauri dev` el cambio de idioma, el primer arranque en otro idioma del sistema, los arrastres/portapapeles/selector de color de la 1.1.0 y las barras de formato.
+
+## Mejora 2 · Desinstalar y reinstalar conservaba las tarjetas — hecha (pendiente de probar en tu equipo)
+
+### Qué se pidió
+Caso de prueba: instalar, crear tarjetas, desinstalar (sin copias ni otras acciones) y reinstalar el mismo ejecutable. Esperado: ninguna tarjeta anterior. Observado: reaparecen. Decisión acordada (opción 1): casilla en el desinstalador de Windows para borrar los datos (desmarcada por defecto), y en macOS/Linux que «Borrar todos los datos» borre de verdad y avise antes de desinstalar. README con ubicaciones y borrado manual.
+
+### Causa
+Los datos viven en la carpeta de datos del usuario (`app.cuaderno.desktop`), y ningún desinstalador la borra. Además, «Borrar todos los datos» solo eliminaba los documentos dentro de la base de datos: seguían el archivo, la cabecera de cifrado y el llavero.
+
+### Qué se hizo
+- **Núcleo (`store.rs`):** `Store::wipe_all()` cierra la base, sobrescribe con ceros y borra `cuaderno.db`, `-wal`, `-shm`, `-journal`, temporales y `cuaderno.vault.json`, reabre un almacén nuevo y devuelve la cuenta del llavero. Funciona también estando bloqueado y en memoria.
+- **Comando Tauri `data_wipe_all` (`src-tauri/src/lib.rs`):** llama a `wipe_all` y borra el secreto del llavero.
+- **Interfaz:** `Backend.wipeAll()` (Tauri y memoria); «Borrar todos los datos» lo usa, recarga y limpia el historial de deshacer (`reload(true)`) para que Ctrl+Z no devuelva lo borrado. Aviso nuevo `set.data.uninstallHint` en los 6 idiomas.
+- **Windows:** no se cambió la configuración; se confía en la casilla «Delete the application data» del NSIS de Tauri 2 (no verificado: no se pudo consultar su documentación). El `.msi` no la tiene; queda documentado.
+- **Documentación:** README (apartado «Desinstalar y borrar tus datos»), Funciones de la maqueta.
+
+### Cómo se comprobó
+- Nube: 4 pruebas nuevas en `crates/cuaderno-core/tests/store.rs` (sin cifrado, con cifrado y desbloqueo rápido, bloqueado sin archivos sueltos, en memoria): 21 del núcleo pasan. Interfaz: prueba nueva `wipe12.test.tsx`; `tsc` sin errores, 368 pruebas de Vitest y `vite build` correctos.
+- **Sin compilar:** `src-tauri` no se puede compilar en la nube.
+- Pendiente en tu equipo: `cargo test -p cuaderno-core`; `npm run tauri dev` → Ajustes → Datos → «Borrar todos los datos» y comprobar que la carpeta de datos queda sin los archivos viejos; probar con y sin cifrado; en Windows, desinstalar el `.exe` y mirar si aparece la casilla.
+
+## Mejora 3 · Nuevo nombre (OMNIA) e icono — hecha (pendiente de probar en tu equipo)
+
+### Qué se pidió
+Cambiar el icono por el logo de OMNIA (solo logo y nombre, sin el eslogan) y llamar a la app OMNIA. Como ya hay clientes con datos reales, se acordó cambiar solo lo visible y **no tocar** nada que afecte a los datos.
+
+### Qué se hizo
+- **Icono:** recortado el logo y la palabra «OMNIA» de la imagen (sin «All you need in one place») sobre el fondo crema original, en un cuadrado de 1024 px; generados con `tauri icon` los mismos archivos de `src-tauri/icons` (png, `.ico`, `.icns`, Square…). `app-icon.png` de la raíz es ahora ese cuadrado.
+- **Nombre visible:** `tauri.conf.json` (`productName` y título de la ventana), `index.html`, pantalla de bloqueo, nombre de sesión por defecto, calendario principal, textos de los 6 idiomas, exportación `.ics`, aviso de prueba, mensajes de error del núcleo, textos del desbloqueo rápido del sistema, README y RELEASING.
+- **Sin cambiar (a propósito):** identificador `app.cuaderno.desktop`, archivos `cuaderno.db` / `cuaderno.vault.json`, prefijos de copias automáticas, marca `app: "cuaderno"` de los archivos de copia, constantes del cifrado, nombres de los crates y del paquete, y las palabras «cuaderno» como objeto (ambiente «Cuaderno», icono de diario). Los documentos de la maqueta (`Doc/Cuaderno · …`) siguen con ese nombre.
+- **Efecto en datos existentes:** quien ya tenía la app conserva su nombre de sesión y el nombre del calendario principal tal como los guardó (por defecto «Cuaderno»); se pueden renombrar a mano. Solo las instalaciones nuevas salen con «OMNIA».
+
+### Cómo se comprobó
+`tsc` sin errores, 368 pruebas de Vitest y 25 del núcleo Rust correctas. Sin verificar: aspecto del icono en la barra de tareas/Dock y tamaños pequeños, y **actualización de una instalación existente de Cuaderno con el nuevo instalador** (el nombre del producto cambia el nombre del instalador y del ejecutable; en Windows podría instalarse aparte en vez de reemplazar). Probarlo con una instalación real antes de entregarlo a clientes.

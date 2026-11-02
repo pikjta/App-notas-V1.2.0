@@ -386,7 +386,7 @@ Ventana «Ajustes» («Los cambios se guardan al instante, solo en este disposit
 | Tablero | Reducir animaciones | Sí / No |
 | Datos | Copia de seguridad manual | Botón «Abrir» |
 | Datos | Espacio usado | Datos guardados en este ordenador (en la maqueta: «en este navegador») |
-| Datos | Borrar todos los datos | «Borrar…» → «¿Seguro? Te recomendamos exportar una copia antes.» → «Sí, borrar todo» |
+| Datos | Borrar todos los datos | «Borrar…» → «¿Seguro? Te recomendamos exportar una copia antes.» → «Sí, borrar todo». **En la app** borra de verdad los archivos de datos (base de datos, cabecera de cifrado) y la entrada del llavero, y limpia el historial de deshacer; bajo el botón se avisa de que desinstalar no borra los datos (en la maqueta solo vacía la memoria del navegador) |
 
 En la maqueta, «Notificaciones del navegador», «Sonido» y «Al abrir la app» solo guardan su valor: no envían avisos, no reproducen sonido ni muestran los recordatorios pasados. **En la app** sí funcionan: notificación del sistema, sonido suave y, al abrir la app, los recordatorios que pasaron mientras estaba cerrada. Los avisos solo llegan con la app abierta. Además, la app añade los botones «Probar aviso» y «Probar» (sonido).
 

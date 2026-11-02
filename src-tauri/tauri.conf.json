@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Cuaderno",
+  "productName": "OMNIA",
   "version": "1.2.0",
   "identifier": "app.cuaderno.desktop",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Cuaderno",
+        "title": "OMNIA",
         "width": 1440,
         "height": 900,
         "minWidth": 1024,
