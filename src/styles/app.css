@@ -41,7 +41,7 @@ button { cursor: pointer; }
 
 /* Tablero */
 .board { overflow: auto; padding: 32px 40px 60px; background-color: var(--board-bg); color: var(--board-ink); position: relative; isolation: isolate; --arrow: color-mix(in srgb, var(--board-ink) 55%, transparent); }
-.board-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.board-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin: -32px -40px 12px; padding: 32px 40px 12px; position: sticky; top: 0; z-index: 9000; background-color: var(--board-bg); }
 .board-title { font-family: var(--serif); font-size: 44px; font-weight: 600; letter-spacing: -0.02em; margin: 0; flex: 1; line-height: 1.1; }
 .board-title-input { font-family: var(--serif); font-size: 44px; font-weight: 600; flex: 1; border: 0; border-bottom: 2px solid var(--accent); background: transparent; outline: none; }
 .board-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -960,7 +960,6 @@ body.pm-grabbing, body.pm-grabbing * { user-select: none !important; cursor: gra
 .fx-code { display: block; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--card-soft); border: 1px solid var(--card-line); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; }
 button.pm-formula.err { border: 0; background: transparent; font: inherit; width: 100%; text-align: left; cursor: pointer; }
 .pm-grid th[data-letter]::before { content: attr(data-letter); position: absolute; left: 3px; top: 1px; font-size: 9px; font-weight: 700; color: var(--card-muted); opacity: 0.8; pointer-events: none; }
-.pm-grid th[data-letter] { position: relative; }
 .tbl-fbar { display: flex; align-items: center; gap: 8px; padding: 3px 6px; margin-bottom: 4px; border: 1px solid var(--card-line); border-radius: 8px; background: var(--card-soft); font-size: 12px; }
 .tbl-fbar b { min-width: 34px; text-align: center; border-right: 1px solid var(--card-line); padding-right: 8px; }
 .tbl-fbar .fx { color: var(--card-muted); font-style: italic; }
