@@ -116,7 +116,7 @@ crates/cuaderno-core/    Núcleo en Rust, sin Tauri: SQLite, cifrado y copias. C
 crates/cuaderno-os/      Llavero del sistema (reservado; hoy sin usar)
 src-tauri/               Capa de Tauri: expone el núcleo como comandos a la interfaz
 .github/                 Workflows de instaladores (Windows, Ubuntu y macOS)
-Doc/                     Documentos de referencia: spec, funciones, plan y registro de mejoras 1.1.0 y 1.2.0
+Doc/                     Documentos de referencia: spec, funciones, plan y registro de mejoras 1.1.0, 1.2.0 y 1.2.1
 src/                     Interfaz en React y TypeScript
   lib/                   Lógica pura y testeable
     model.ts, store.ts   Tipos de datos, estado (reductor) y cola de guardado

@@ -1,6 +1,6 @@
 [package]
 name = "cuaderno"
-version = "1.2.0"
+version = "1.2.1"
 description = "Cuaderno: agenda y tableros locales"
 edition = "2021"
 license = "MIT"
