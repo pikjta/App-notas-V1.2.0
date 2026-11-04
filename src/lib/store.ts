@@ -71,6 +71,8 @@ export type Action =
   | { t: 'purgeProject'; id: string }
   | { t: 'addCard'; card: Card }
   | { t: 'duplicateCard'; id: string }
+  /** Pega una tarjeta copiada (`snap`, con sus imágenes en `assets`) en el tablero `project`; devuelve la tarjeta nueva en `state.cards`. */
+  | { t: 'pasteCard'; id: string; snap: Card; assets: Asset[]; project: string }
   | { t: 'patchCard'; id: string; patch: CardPatch }
   | { t: 'moveCard'; id: string; x: number; y: number }
   | { t: 'resizeCard'; id: string; w: number; h: number }
@@ -367,6 +369,21 @@ export function reduce(s: State, a: Action): Effect {
       if (!src) return none(s);
       const card = { ...JSON.parse(JSON.stringify(src)), id: uid('card'), title: t('ui.store.copyOf', { title: src.title || t('ui.common.untitled') }), x: src.x + 28, y: src.y + 28, trashed: null, z: topZ(s.cards, src.project) + 1, pos: nextPos(s.cards.filter((c) => c.project === src.project)) } as Card;
       return { state: { ...s, cards: [...s.cards, card] }, put: [cardToDoc(card)], del: [] };
+    }
+    case 'pasteCard': {
+      if (!s.projects.some((p) => p.id === a.project && !p.trashed)) return none(s);
+      if (a.snap.type === 'widget' && !s.projects.some((p) => p.id === a.project && p.home)) return none(s);
+      // Tarjeta nueva con identificador propio; sus imágenes se duplican con identificadores nuevos (la copia no comparte archivos con el original).
+      const id = a.id;
+      let text = JSON.stringify(a.snap);
+      const assets = a.assets.map((x) => {
+        const nid = uid('asset');
+        text = text.split(x.id).join(nid);
+        return { ...x, id: nid, card: id };
+      });
+      const spot = freeSpot(s.cards, a.project, s.settings);
+      const card = { ...JSON.parse(text), id, project: a.project, ...spot, trashed: null, z: topZ(s.cards, a.project) + 1, pos: nextPos(s.cards.filter((c) => c.project === a.project)) } as Card;
+      return { state: { ...s, cards: [...s.cards, card], assets: { ...s.assets, ...Object.fromEntries(assets.map((x) => [x.id, x])) } }, put: [...assets.map(assetToDoc), cardToDoc(card)], del: [] };
     }
     case 'patchCard':
       return withCard(a.id, (c) => ({ ...c, ...a.patch, ...(c.type === 'reminder' && 'when' in a.patch ? { notified: null } : {}) }) as Card);

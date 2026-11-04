@@ -40,8 +40,10 @@ button { cursor: pointer; }
 .icon-btn.small { width: 28px; height: 28px; color: var(--card-muted); }
 
 /* Tablero */
-.board { overflow: auto; padding: 32px 40px 60px; background-color: var(--board-bg); color: var(--board-ink); position: relative; isolation: isolate; --arrow: color-mix(in srgb, var(--board-ink) 55%, transparent); }
-.board-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin: -32px -40px 12px; padding: 32px 40px 12px; position: sticky; top: 0; z-index: 9000; background-color: var(--board-bg); }
+.board { overflow: auto; padding: 0 40px 60px; background-color: var(--board-bg); color: var(--board-ink); position: relative; isolation: isolate; --arrow: color-mix(in srgb, var(--board-ink) 55%, transparent); }
+.board-head { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin: 0 -40px 12px; padding: 32px 40px 12px; position: sticky; top: 0; z-index: 9000; background-color: var(--board-bg); }
+/* El relleno superior del tablero vive en la cabecera fija (WebKit pega lo «sticky» al borde interior del relleno); lo demás lo conserva con margen. */
+.board > :first-child:not(.board-head) { margin-top: 32px; }
 .board-title { font-family: var(--serif); font-size: 44px; font-weight: 600; letter-spacing: -0.02em; margin: 0; flex: 1; line-height: 1.1; }
 .board-title-input { font-family: var(--serif); font-size: 44px; font-weight: 600; flex: 1; border: 0; border-bottom: 2px solid var(--accent); background: transparent; outline: none; }
 .board-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -1051,3 +1053,8 @@ button.pm-formula.err { border: 0; background: transparent; font: inherit; width
 .cal-icon { width: 40px; padding: 0; justify-content: center; }
 .cg-cell .chip-ev { display: block; }
 .chip-ev b { display: inline; font-weight: 800; }
+
+/* 1.2.1: tarjeta seleccionada (clic en su franja superior) y aviso breve «Tarjeta copiada». */
+.card.selected { outline: 2px solid var(--accent); outline-offset: 3px; }
+.copied-pop { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 5; pointer-events: none; padding: 6px 14px; border-radius: 999px; background: var(--card-ink); color: var(--card-bg); font-size: 12.5px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 18px rgba(20, 15, 10, 0.3); animation: copied-pop 1.2s ease both; }
+@keyframes copied-pop { 0% { opacity: 0; transform: translate(-50%, 6px) scale(0.9); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 75% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -8px) scale(0.98); } }

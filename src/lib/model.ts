@@ -87,6 +87,8 @@ export const LANGUAGES: { id: Language; name: string }[] = [{ id: 'es', name: 'E
 export type Settings = {
   /** Nombre de la sesión (arriba de la barra lateral) y su tipografía. */
   sessionName: string;
+  /** Versión de la migración de nombres («Cuaderno» → «OMNIA», 1.2.1). Sin este campo, se migra al abrir. */
+  nameV?: number;
   sessionFont: FontStyle;
   /** Color y textura de la barra lateral (iguales en todos los tableros). */
   side: SideStyle;
@@ -247,19 +249,22 @@ export function fromDocs(docs: Doc[]): { projects: Project[]; cards: Card[]; set
   const events: CalEvent[] = [];
   const folders: Folder[] = [];
   let settings = DEFAULT_SETTINGS;
+  let renameMain = false;
   let i = 0;
   for (const d of docs) {
     const data = (d.data ?? {}) as Record<string, unknown>;
     if (d.kind === 'project') { const p = { trashed: null, links: [], ...(data as Omit<Project, 'id' | 'pos'>), id: d.id, pos: d.pos } as Project; p.theme = normalizeTheme(p.theme); projects.push(p); }
     else if (d.kind === 'asset' && d.parent) assets[d.id] = { id: d.id, card: d.parent, mime: String(data.mime ?? ''), data: String(data.data ?? '') };
     else if (d.kind === 'card' && d.parent && CARD_TYPES.includes(data.type as CardType)) cards.push(normalizeCard(data, d.id, d.parent, d.pos, i++));
-    else if (d.kind === 'settings') { const st = { ...DEFAULT_SETTINGS, ...(data as Partial<Settings>) }; st.sessionFont = normalizeFont(st.sessionFont, DEFAULT_SESSION_FONT); st.side = normalizeSide(st.side); st.iconStyle = normalizeIconStyle(st.iconStyle); st.colorIcon = normalizeColorIcon(st.colorIcon); st.viewIcons = normalizeViewIcons(st.viewIcons); st.backup = normalizeBackup(data as never); delete (st as { autoBackup?: unknown }).autoBackup; settings = st; }
+    else if (d.kind === 'settings') { const st = { ...DEFAULT_SETTINGS, ...(data as Partial<Settings>) }; st.sessionFont = normalizeFont(st.sessionFont, DEFAULT_SESSION_FONT); st.side = normalizeSide(st.side); st.iconStyle = normalizeIconStyle(st.iconStyle); st.colorIcon = normalizeColorIcon(st.colorIcon); st.viewIcons = normalizeViewIcons(st.viewIcons); st.backup = normalizeBackup(data as never); delete (st as { autoBackup?: unknown }).autoBackup; if (Number((data as { nameV?: unknown }).nameV ?? 0) < 1) { if (st.sessionName === 'Cuaderno') st.sessionName = 'OMNIA'; renameMain = true; } st.nameV = 1; settings = st; }
     else if (d.kind === 'pmtpls') pmTemplates = Array.isArray((data as { list?: PmTemplate[] }).list) ? (data as { list: PmTemplate[] }).list : [];
     else if (d.kind === 'tags') tags = Array.isArray((data as { tags?: Opt[] }).tags) ? (data as { tags: Opt[] }).tags : [];
     else if (d.kind === 'folder') folders.push({ name: String(data.name ?? ''), collapsed: !!data.collapsed, id: d.id, pos: d.pos });
     else if (d.kind === 'calendar') calendars.push({ ...(data as Omit<Calendar, 'id' | 'pos'>), id: d.id, pos: d.pos });
     else if (d.kind === 'event' && d.parent) { const e = data as Partial<CalEvent>; events.push({ title: e.title ?? '', start: e.start ?? '', end: e.end ?? e.start ?? '', allDay: !!e.allDay, note: e.note ?? '', repeat: e.repeat ?? 'none', id: d.id, calendar: d.parent }); }
   }
+  // 1.2.1: el calendario principal y el nombre de sesión que seguían con el nombre antiguo pasan a OMNIA (si el usuario los renombró, no se tocan).
+  if (renameMain) for (const c of calendars) if (c.id === 'cal-main' && c.name === 'Cuaderno') c.name = 'OMNIA';
   // Los calendarios integrados existen siempre (y conservan lo que el usuario cambió de ellos).
   for (const b of builtinCalendars(settings.lang)) if (!calendars.some((c) => c.id === b.id)) calendars.push(b);
   calendars.sort((a, b) => a.pos - b.pos);
@@ -267,6 +272,13 @@ export function fromDocs(docs: Doc[]): { projects: Project[]; cards: Card[]; set
   projects.sort((a, b) => Number(!!b.home) - Number(!!a.home) || a.pos - b.pos);
   cards.sort((a, b) => a.pos - b.pos);
   return { projects, cards, settings, assets, calendars, events, tags, pmTemplates, folders };
+}
+
+/** Nombre que se muestra del proyecto. El de Inicio, si sigue con el nombre de ejemplo de cualquier idioma, sale en el idioma actual (no modifica los datos). */
+export function projectName(p: { name: string; home?: boolean }): string {
+  if (!p.home) return p.name;
+  const known = LANGUAGES.some((l) => tIn(l.id, 'ui.starter.home') === p.name || tIn(l.id, 'sam.proj.home') === p.name);
+  return known ? t('ui.starter.home') : p.name;
 }
 
 /** Contenido inicial de un cuaderno vacío. */
