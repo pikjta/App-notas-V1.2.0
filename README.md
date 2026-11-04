@@ -155,6 +155,10 @@ Desinstalar la app **no borra tus datos**: los sistemas operativos dejan intacta
 - **Windows, con el instalador `.exe` (NSIS):** el desinstalador de Tauri 2 ofrece la casilla «Delete the application data» (en inglés salvo que se configuren otros idiomas del instalador). *Sin verificar todavía en una desinstalación real.* El instalador `.msi` no tiene esa casilla.
 - **A mano:** cierra la app y borra la carpeta `app.cuaderno.desktop` indicada arriba. Si usabas el desbloqueo rápido, borra también la entrada `app.cuaderno.desktop` del llavero (Administrador de credenciales de Windows, Acceso a Llaveros de macOS o el gestor de secretos de tu sesión en Linux).
 
+**Qué hay dentro de esa carpeta.** Además de `cuaderno.db` (con sus `-wal` y `-shm`) y, si activaste el cifrado, `cuaderno.vault.json`, el motor web que muestra la interfaz (WebKitGTK en Linux) guarda ahí sus propios archivos: `localstorage`, `mediakeys`, `hsts-storage.sqlite` y otros. No contienen tus tarjetas (por ejemplo, `localstorage` recuerda el último idioma usado), pero «Borrar todos los datos» no los elimina. Para no dejar ningún rastro, con la app cerrada borra la carpeta entera, por ejemplo en Linux con `rm -rf ~/.local/share/app.cuaderno.desktop/` (comprueba bien la ruta: no se puede deshacer). Es posible que el motor web deje además restos de caché en `~/.cache/` o `~/.config/` con el mismo identificador; puedes buscarlos con `find ~ -iname "*cuaderno*" -o -iname "*omnia*"`. *Sin verificar todavía en Windows y macOS, donde los archivos del motor web tienen otros nombres.*
+
+**Actualizar sin perder datos.** Al instalar una versión nueva no hay que borrar esa carpeta: los datos y los archivos del motor web se conservan y se reutilizan (los del motor web son inofensivos y solo recuerdan el último idioma). Haz antes una copia manual y desinstala la versión antigua; en Windows, con el `.exe`, deja desmarcada la casilla «Delete the application data». Si solo quieres limpiar los archivos del motor web conservando los datos, nunca borres `cuaderno.db*` ni `cuaderno.vault.json`; el procedimiento está en `RELEASING.md`, apartado «Actualizar a una versión nueva conservando los datos».
+
 ### Idiomas
 
 Cada idioma es un conjunto de archivos en `src/i18n/<idioma>/` (uno por área: `app`, `cards`, `settings`, `agenda`, `pm`, `calc` y `sample`) con las mismas claves que el español (`src/i18n/es/`), que es la referencia. En el código se escribe `t('clave')`, `tn('clave', n)` para plurales (`clave.one` / `clave.other`) y `locale()` para fechas y números. Una prueba (`npm test`) exige que todos los idiomas tengan todas las claves con las mismas `{variables}`, y otra detecta textos en español escritos a mano en el código.
@@ -186,6 +190,7 @@ Cada copia se escribe primero en un archivo temporal para que nunca quede a medi
 | Flechas, ⇧+flechas, F2, Ctrl+A/C/X/V | En las tablas: moverse, seleccionar, editar y copiar/pegar como en Excel |
 | `=` al inicio de una celda | Fórmula (`=SUMA(A2:A9)`, `=B2*C3`) en Tabla y Tabla PM |
 | `[[` en una nota | Selector para enlazar una tarea principal o una tarjeta |
+| Clic en la franja superior de una tarjeta, Ctrl+C / ⌘C, Ctrl+V / ⌘V | Seleccionar, copiar y pegar una tarjeta en el tablero abierto (Esc quita la selección) |
 
 ## Documentación del proyecto
 

@@ -62,6 +62,33 @@ de `tauri.conf.json` para la etiqueta).
 | macOS | `.dmg` (y `.app.tar.gz` para el actualizador) | Sí |
 | Linux | `.AppImage`, `.deb`, `.rpm` | Sí con **AppImage**; con `.deb`/`.rpm` se actualiza con el gestor de paquetes descargando el nuevo |
 
+## Actualizar a una versión nueva conservando los datos
+
+Los datos y los archivos propios del motor web (caché, `localstorage`, etc.) viven **en la misma
+carpeta**: `app.cuaderno.desktop` (rutas por sistema en el README, «Cómo se guardan los datos»).
+Mientras no cambie el identificador `app.cuaderno.desktop`, instalar una versión nueva no toca esa
+carpeta y los datos se conservan.
+
+1. **Copia de seguridad antes de actualizar**: Ajustes → Backup → copia manual.
+2. **Desinstala la versión antigua** y instala la nueva. Cuando el nombre del producto cambió
+   (Cuaderno → OMNIA), el instalador nuevo puede instalarse aparte en vez de reemplazar a la antigua
+   (otro paquete en Linux, otra `.app` en macOS, otra entrada en Windows): *sin verificar*. En
+   Windows, con el `.exe`, deja **desmarcada** la casilla «Delete the application data».
+3. **No hace falta borrar nada más.** Los archivos del motor web que quedan en la carpeta de datos
+   son inofensivos y la versión nueva los reutiliza. En ellos solo se guarda el último idioma
+   usado (para la pantalla de bloqueo) y datos propios del motor.
+
+**Qué no hay que hacer:** borrar la carpeta `app.cuaderno.desktop` entera. Eso elimina también los
+datos (`cuaderno.db`, `cuaderno.vault.json`).
+
+**Si de verdad quieres limpiar solo los archivos del motor web y conservar los datos** (se puede,
+pero la app no lo hace sola): cierra la app, haz la copia de seguridad y borra únicamente los
+archivos del motor web, nunca `cuaderno.db`, `cuaderno.db-wal`, `cuaderno.db-shm` ni
+`cuaderno.vault.json`. En Ubuntu son `localstorage`, `mediakeys` y `hsts-storage.sqlite` (y la
+caché del motor, si existe). *En Windows y macOS los nombres son otros y no están verificados:
+revisa el contenido antes de borrar.* Lo único que se pierde es el idioma recordado, que se vuelve
+a elegir en Ajustes.
+
 ## Avisos del sistema la primera vez (sin firma de código)
 
 La firma de actualizaciones es gratuita, pero la **firma de código** de Apple y Microsoft es aparte:

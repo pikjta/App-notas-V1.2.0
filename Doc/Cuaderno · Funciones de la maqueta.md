@@ -481,6 +481,7 @@ Opcional y desactivado por defecto. Se configura en Ajustes → Seguridad.
   - Tab y Mayús+Tab crean o deshacen subtareas en los checklists.
   - **En la app** (mejora 1.1.0): Alt+↑ / Alt+↓ mueven la tarea seleccionada en la barra lateral, que también admite arrastrar tareas entre carpetas; cada tarea puede tener su propio icono, que se elige en «Personalizar tablero».
   - ↑↓ y Enter funcionan en la búsqueda; en la Tabla PM se navega con el teclado.
+  - **En la app** (mejora 1.2.1): **copiar y pegar tarjetas.** Un clic en la franja superior de una tarjeta (la que tiene el tipo, el icono de color y los botones) la selecciona, con un borde de color. Ctrl+C / ⌘C la copia y muestra un aviso breve y animado sobre la tarjeta («Tarjeta copiada»); Ctrl+V / ⌘V pega una copia en el tablero que esté abierto (Inicio u otra tarea principal), debajo de las demás, y la selecciona. Se puede pegar varias veces y en distintos tableros. La copia es una foto del momento de copiar; las imágenes (de la tarjeta de imagen o de las celdas de una Tabla PM) se duplican, y las flechas no se copian. No se copian los widgets ni las notas de un día del Diario («Esta tarjeta no se puede copiar»). Esc quita la selección. Dentro de un campo de texto o de una tarjeta se conserva el copiar y pegar propio de esa zona. El portapapeles de tarjetas vive en memoria y se pierde al cerrar la app.
 
 ## 17. Datos de ejemplo de la maqueta
 
