@@ -107,6 +107,8 @@ export const app: Part<typeof Es> = {
   'ui.board.addFirst': 'Aggiungi la prima scheda',
   'ui.board.alreadyLinked': 'Queste schede sono già collegate',
   'ui.board.arrowCreated': 'Freccia creata · passa il cursore sopra per modificarla',
+  'ui.board.cardCopied': 'Scheda copiata',
+  'ui.board.cardNoCopy': 'Questa scheda non può essere copiata',
   'ui.board.arrowLabelPh': 'Etichetta (facoltativa)',
   'ui.board.arrowLabel': 'Etichetta della freccia',
   'ui.board.color': 'Colore',

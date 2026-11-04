@@ -6,7 +6,7 @@ import { errorText } from '../lib/backend';
 import { t } from '../i18n';
 import { arrowBetween } from '../lib/graphics';
 import { readImage } from '../lib/images';
-import { CARD_KIND_LABEL, DEFAULT_THEME, uid } from '../lib/model';
+import { CARD_KIND_LABEL, DEFAULT_THEME, projectName, uid } from '../lib/model';
 import type { Card, CardType, ImageCard, Link, Project } from '../lib/model';
 import { BOARD_COLORS, DEFAULT_TITLE_FONT, cardVars, fontCss, normalizeFont, normalizeTheme } from '../lib/appearance';
 import { BoardPanel, FontPanel } from './Appearance';
@@ -15,6 +15,7 @@ import { ColorPicker } from './ColorPicker';
 import { Icon } from './Icon';
 import { normalizeColorIcon } from '../lib/icons';
 import { projectStats } from '../lib/agenda';
+import { copyCard, pasteClip } from '../lib/cardClip';
 import { MAX_W, MIN_W, newCard, newWidget, snapTo } from '../lib/store';
 import { CheckBody } from './cards/CheckBody';
 import { ImageBody } from './cards/ImageBody';
@@ -48,7 +49,7 @@ const widgetItems = (): { w: 'today' | 'upcoming' | 'projects'; label: string; d
 const LINK_COLORS: (string | null)[] = [null, '#C8372D', '#E2B65B', '#5E7A2E', '#2F6690', '#7A3E6B'];
 
 export function Board() {
-  const { state, dispatch, flashId, toast, openPm, undo, redo, canUndo, canRedo } = useApp();
+  const { state, dispatch, flashId, toast, openPm, undo, redo, canUndo, canRedo, goTo } = useApp();
   const [tplOpen, setTplOpen] = useState(false);
   const canvas = useRef<HTMLDivElement>(null);
   // Alturas reales de las tarjetas (para dibujar las flechas cuando la altura es automática).
@@ -62,6 +63,44 @@ export function Board() {
   const [renaming, setRenaming] = useState(false);
   const [trashOpen, setTrashOpen] = useState(false);
   const [menu, setMenu] = useState(false);
+  // Copiar y pegar tarjetas (1.2.1): un clic en la franja superior de la tarjeta la selecciona; Ctrl/⌘+C la copia y Ctrl/⌘+V pega en el tablero abierto.
+  const [selected, setSelected] = useState<string | null>(null);
+  const [copied, setCopied] = useState<{ id: string; n: number } | null>(null);
+  useEffect(() => { setSelected(null); }, [state.sel]);
+  useEffect(() => {
+    if (!copied) return;
+    const h = window.setTimeout(() => setCopied(null), 1300);
+    return () => window.clearTimeout(h);
+  }, [copied]);
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selected) { setSelected(null); return; }
+      if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
+      const k = e.key.toLowerCase();
+      if (k !== 'c' && k !== 'v') return;
+      const el = e.target as HTMLElement | null;
+      // Dentro de un campo de texto o de una tarjeta se deja el copiar y pegar propio de esa zona; con una ventana abierta, tampoco.
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable || el.closest('.card'))) return;
+      if (document.querySelector('.modal-back, [role="dialog"]')) return;
+      if (k === 'c') {
+        const card = selected ? state.cards.find((c) => c.id === selected && !c.trashed) : undefined;
+        if (!card || window.getSelection()?.toString()) return;
+        e.preventDefault();
+        if (copyCard(card, state.assets)) setCopied({ id: card.id, n: Date.now() }); else toast(t('ui.board.cardNoCopy'));
+      } else {
+        const target = state.projects.find((p) => p.id === state.sel && !p.trashed);
+        const clip = pasteClip();
+        if (!target || !clip) return;
+        e.preventDefault();
+        const id = uid('card');
+        dispatch({ t: 'pasteCard', id, snap: clip.card, assets: clip.assets, project: target.id });
+        goTo(target.id, id);
+        setSelected(id);
+      }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  });
   if (!project) return <main className="board"><div className="empty">{t('ui.board.pickProject')}</div></main>;
 
   const theme = normalizeTheme(project.theme ?? DEFAULT_THEME);
@@ -103,6 +142,13 @@ export function Board() {
         }
       }}
       onClick={(e) => { if (linkSel && !(e.target as HTMLElement).closest('.link-menu, .link-hit, .link-mid')) setLinkSel(null); }}
+      onPointerDown={(e) => {
+        const el = e.target as HTMLElement;
+        const art = el.closest('[data-card]');
+        const onHead = !!art && !!el.closest('.card-head') && !el.closest('button, input, textarea, select, a');
+        setSelected(onHead ? art!.getAttribute('data-card') : null);
+        if (onHead) (document.activeElement as HTMLElement | null)?.blur?.();
+      }}
     >
       <header className="board-head">
         {renaming && !project.home ? (
@@ -115,7 +161,7 @@ export function Board() {
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur(); }}
           />
         ) : (
-          <h1 className="board-title" style={titleCss} onDoubleClick={() => setRenaming(true)} title={project.home ? undefined : t('ui.board.renameHint')}>{project.name || t('ui.common.unnamed')}</h1>
+          <h1 className="board-title" style={titleCss} onDoubleClick={() => setRenaming(true)} title={project.home ? undefined : t('ui.board.renameHint')}>{projectName(project) || t('ui.common.unnamed')}</h1>
         )}
         <div className="board-progress" title={stats.total ? t('ui.common.doneOf', { done: stats.done, total: stats.total }) : t('ui.board.noTasksYet')}>
           <b>{stats.pct}%</b><div className="progress"><span style={{ width: stats.pct + '%' }} /></div>
@@ -162,7 +208,7 @@ export function Board() {
             return <svg className="arrows preview" width="100%" height={height}><path d={a.d} fill="none" stroke="var(--board-ink)" strokeWidth={2} strokeDasharray="6 5" /></svg>;
           })()}
           {cards.map((c) => (
-            <CardFrame key={c.id} card={c} flash={flashId === c.id} linkTarget={!!linking && linking.over === c.id && linking.from !== c.id}
+            <CardFrame key={c.id} card={c} flash={flashId === c.id} selected={selected === c.id} copied={copied?.id === c.id ? copied.n : 0} linkTarget={!!linking && linking.over === c.id && linking.from !== c.id}
               onHeight={(h) => setHeights((m) => (m[c.id] === h ? m : { ...m, [c.id]: h }))}
               onLinkStart={(e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -241,7 +287,7 @@ function Arrows({ project, cards, rectOf, sel, setSel }: { project: Project; car
 }
 
 /** Marco de tarjeta. `fixed`: sin arrastrar ni flechas (p. ej. la nota del Diario). */
-export function CardFrame({ card, flash, linkTarget = false, onHeight, onLinkStart, fixed = false }: { card: Card; flash: boolean; linkTarget?: boolean; onHeight?: (h: number) => void; onLinkStart?: (e: RPointerEvent) => void; fixed?: boolean }) {
+export function CardFrame({ card, flash, linkTarget = false, selected = false, copied = 0, onHeight, onLinkStart, fixed = false }: { card: Card; flash: boolean; linkTarget?: boolean; selected?: boolean; copied?: number; onHeight?: (h: number) => void; onLinkStart?: (e: RPointerEvent) => void; fixed?: boolean }) {
   const { dispatch, state, toast } = useApp();
   const [drag, setDrag] = useState<Drag | null>(null);
   const [picker, setPicker] = useState(false);
@@ -299,7 +345,7 @@ export function CardFrame({ card, flash, linkTarget = false, onHeight, onLinkSta
     <article
       ref={ref}
       data-card={card.id}
-      className={'card ctex-' + theme.cardTexture + (fixed ? ' fixed' : ' free') + (drag ? ' dragging' : '') + (flash ? ' flash' : '') + (linkTarget ? ' link-target' : '')}
+      className={'card ctex-' + theme.cardTexture + (fixed ? ' fixed' : ' free') + (drag ? ' dragging' : '') + (flash ? ' flash' : '') + (linkTarget ? ' link-target' : '') + (selected ? ' selected' : '')}
       style={fixed ? vars : { ...vars, ...live, zIndex: drag ? 9999 : card.z }}
       onPointerDown={(e) => start(e, 'move')}
     >
@@ -325,6 +371,7 @@ export function CardFrame({ card, flash, linkTarget = false, onHeight, onLinkSta
       {!fixed && <span className="link-dot right" title={t('ui.board.linkDot')} onPointerDown={onLinkStart} />}
       {!fixed && <span className="link-dot bottom" title={t('ui.board.linkDot')} onPointerDown={onLinkStart} />}
       {!fixed && <span className="resize" aria-label={t('ui.board.resize')} onPointerDown={(e) => { e.stopPropagation(); start(e, 'resize'); }} />}
+      {copied > 0 && <span key={copied} className="copied-pop" role="status">{t('ui.board.cardCopied')}</span>}
       {big && <BigCard id={card.id} onClose={() => setBig(false)} />}
     </article>
   );

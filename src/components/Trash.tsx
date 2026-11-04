@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../App';
 import { t, tn } from '../i18n';
-import { CARD_KIND_LABEL } from '../lib/model';
+import { CARD_KIND_LABEL, projectName } from '../lib/model';
 import type { Project } from '../lib/model';
 
 const ago = (ms: number) => {
@@ -16,7 +16,7 @@ export function Trash() {
   const projects = state.projects.filter((p) => p.trashed);
   const trashedIds = new Set(projects.map((p) => p.id));
   const cards = state.cards.filter((c) => c.trashed && !trashedIds.has(c.project));
-  const name = (id: string) => state.projects.find((p) => p.id === id)?.name ?? '';
+  const name = (id: string) => { const p = state.projects.find((x) => x.id === id); return p ? projectName(p) : ''; };
   const empty = projects.length + cards.length === 0;
   const folderName = (p: Project) => state.folders.find((f) => f.id === p.folder)?.name;
 
@@ -74,8 +74,8 @@ export function BoardTrash({ project, onClose }: { project: Project; onClose: ()
   const cards = state.cards.filter((c) => c.project === project.id && c.trashed);
   return (
     <div className="ap-back" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <section className="ap-panel" role="dialog" aria-label={t('ui.trash.boardTitle', { name: project.name })} onKeyDown={(e) => e.key === 'Escape' && onClose()}>
-        <header className="ap-head"><h2>{t('ui.trash.boardTitle', { name: project.name })}</h2></header>
+      <section className="ap-panel" role="dialog" aria-label={t('ui.trash.boardTitle', { name: projectName(project) })} onKeyDown={(e) => e.key === 'Escape' && onClose()}>
+        <header className="ap-head"><h2>{t('ui.trash.boardTitle', { name: projectName(project) })}</h2></header>
         <div className="ap-body">
           {cards.length === 0 ? <p className="muted">{t('ui.trash.noBoardCards')}</p> : cards.map((c) => (
             <div key={c.id} className="trash-row">

@@ -107,6 +107,8 @@ export const app: Part<typeof Es> = {
   'ui.board.addFirst': 'Erste Karte hinzufügen',
   'ui.board.alreadyLinked': 'Diese Karten sind bereits verbunden',
   'ui.board.arrowCreated': 'Pfeil erstellt · zum Bearbeiten mit dem Cursor darüberfahren',
+  'ui.board.cardCopied': 'Karte kopiert',
+  'ui.board.cardNoCopy': 'Diese Karte kann nicht kopiert werden',
   'ui.board.arrowLabelPh': 'Label (optional)',
   'ui.board.arrowLabel': 'Label des Pfeils',
   'ui.board.color': 'Farbe',

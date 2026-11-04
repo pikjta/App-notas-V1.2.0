@@ -106,6 +106,8 @@ export const app = {
   'ui.board.addFirst': 'Añadir primera tarjeta',
   'ui.board.alreadyLinked': 'Esas tarjetas ya están unidas',
   'ui.board.arrowCreated': 'Flecha creada · pasa el cursor por ella para editarla',
+  'ui.board.cardCopied': 'Tarjeta copiada',
+  'ui.board.cardNoCopy': 'Esta tarjeta no se puede copiar',
   'ui.board.arrowLabelPh': 'Etiqueta (opcional)',
   'ui.board.arrowLabel': 'Etiqueta de la flecha',
   'ui.board.color': 'Color',

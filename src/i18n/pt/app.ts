@@ -107,6 +107,8 @@ export const app: Part<typeof Es> = {
   'ui.board.addFirst': 'Adicionar primeiro cartão',
   'ui.board.alreadyLinked': 'Esses cartões já estão ligados',
   'ui.board.arrowCreated': 'Seta criada · passe o cursor por cima para a editar',
+  'ui.board.cardCopied': 'Cartão copiado',
+  'ui.board.cardNoCopy': 'Este cartão não pode ser copiado',
   'ui.board.arrowLabelPh': 'Etiqueta (opcional)',
   'ui.board.arrowLabel': 'Etiqueta da seta',
   'ui.board.color': 'Cor',

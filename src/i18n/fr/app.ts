@@ -101,6 +101,8 @@ export const app: Part<typeof Es> = {
   'ui.board.addFirst': 'Ajouter la première carte',
   'ui.board.alreadyLinked': 'Ces cartes sont déjà reliées',
   'ui.board.arrowCreated': 'Flèche créée · survolez-la pour la modifier',
+  'ui.board.cardCopied': 'Carte copiée',
+  'ui.board.cardNoCopy': 'Cette carte ne peut pas être copiée',
   'ui.board.arrowLabelPh': 'Étiquette (facultatif)',
   'ui.board.arrowLabel': 'Étiquette de la flèche',
   'ui.board.color': 'Couleur',

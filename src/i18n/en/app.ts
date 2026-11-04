@@ -101,6 +101,8 @@ export const app: Part<typeof Es> = {
   'ui.board.addFirst': 'Add first card',
   'ui.board.alreadyLinked': 'Those cards are already linked',
   'ui.board.arrowCreated': 'Arrow created · hover over it to edit',
+  'ui.board.cardCopied': 'Card copied',
+  'ui.board.cardNoCopy': 'This card cannot be copied',
   'ui.board.arrowLabelPh': 'Label (optional)',
   'ui.board.arrowLabel': 'Arrow label',
   'ui.board.color': 'Colour',
